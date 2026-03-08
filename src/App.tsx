@@ -1,7 +1,7 @@
-import { CoverLetterTemplater } from './CoverLetterTemplater'
+import { ResumeTemplater } from './ResumeTemplater'
 
 function App() {
-  return <CoverLetterTemplater />
+  return <ResumeTemplater />
 }
 
 export default App
