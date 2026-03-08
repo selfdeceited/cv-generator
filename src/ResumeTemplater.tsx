@@ -251,13 +251,6 @@ export function ResumeTemplater() {
     setSaved(false);
   };
 
-  const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => { setPhoto(reader.result as string); setSaved(false); };
-    reader.readAsDataURL(file);
-  };
 
   const currentData = () => ({ fields, workEntries, educationEntries, achievementEntries, hardSkills, softSkills, otherSkills, photo });
 
@@ -376,11 +369,10 @@ export function ResumeTemplater() {
           </div>
 
           <div className="field">
-            <label htmlFor="photo">Photo</label>
+            <label htmlFor="photo">Photo URL</label>
             <div className="cv-photo-upload">
-              <input id="photo" type="file" accept="image/*" onChange={handlePhotoChange} />
+              <input id="photo" type="url" value={photo} onChange={(e) => { setPhoto(e.target.value); setSaved(false); }} placeholder="https://example.com/photo.jpg" />
               {photo && <img src={photo} alt="Preview" className="cv-photo-thumb" />}
-              {photo && <button type="button" className="cv-remove-btn" onClick={() => { setPhoto(""); setSaved(false); }}>Remove</button>}
             </div>
           </div>
 
