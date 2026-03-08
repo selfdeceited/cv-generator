@@ -1,5 +1,6 @@
-import { useState, type ChangeEvent } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import Markdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import "./ResumeTemplater.css";
@@ -170,7 +171,7 @@ function PreviewIdentity({ name, title, email, location, linkedinLink, githubLin
 
 function PreviewText({ value }: { value: string }) {
   if (!value) return <em style={{ opacity: 0.4 }}>—</em>;
-  return <Markdown>{value}</Markdown>;
+  return <Markdown remarkPlugins={[remarkBreaks]}>{value}</Markdown>;
 }
 
 function loadFromStorage(storageKey = STORAGE_KEY): {
@@ -222,6 +223,40 @@ export function ResumeTemplater() {
   const [forkSelected, setForkSelected] = useState(() => getAvailableForks().length === 0);
   const [forkInput, setForkInput] = useState("");
   const [showForkInput, setShowForkInput] = useState(false);
+
+  const [readOnly, setReadOnly] = useState(false);
+  const [loading, setLoading] = useState(() => Boolean(new URLSearchParams(window.location.search).get("data")));
+
+  useEffect(() => {
+    const url = new URLSearchParams(window.location.search).get("data");
+    if (!url) return;
+    const unescape = (s: string) => s.replace(/\\n/g, "\n");
+    const unescapeStrings = <T,>(obj: T): T => {
+      if (typeof obj === "string") return unescape(obj) as T;
+      if (Array.isArray(obj)) return obj.map(unescapeStrings) as T;
+      if (obj && typeof obj === "object") {
+        return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, unescapeStrings(v)])) as T;
+      }
+      return obj;
+    };
+    fetch(url)
+      .then((r) => r.json())
+      .then((raw) => {
+        const parsed = unescapeStrings(raw);
+        setFields({ ...initialFields, ...parsed.fields });
+        setWorkEntries(parsed.workEntries ?? []);
+        setEducationEntries(parsed.educationEntries ?? []);
+        setAchievementEntries(parsed.achievementEntries ?? []);
+        setHardSkills(parsed.hardSkills ?? "");
+        setSoftSkills(parsed.softSkills ?? "");
+        setOtherSkills(parsed.otherSkills ?? "");
+        setPhoto(parsed.photo ?? "");
+        setReadOnly(true);
+        setIsEditing(false);
+        setForkSelected(true);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleChange =
     (key: keyof ResumeFields) =>
@@ -293,6 +328,10 @@ export function ResumeTemplater() {
   const softTags = toTags(softSkills);
   const otherTags = toTags(otherSkills);
 
+  if (loading) {
+    return <div className="cv"><p style={{ padding: "2rem", color: "#888" }}>Loading…</p></div>;
+  }
+
   if (!forkSelected) {
     return (
       <div className="cv">
@@ -312,31 +351,37 @@ export function ResumeTemplater() {
   return (
     <div className="cv">
       <div className="cv-header">
-        {isEditing && <h1>Resume Generator</h1>}
-        <span className="cv-fork-badge">{activeFork ?? "Base"}</span>
-        <button onClick={() => setForkSelected(false)}>Switch</button>
-        <button onClick={() => setIsEditing((prev) => !prev)}>
-          {isEditing ? "Preview" : "Edit"}
-        </button>
-        <button onClick={handleSave}>Save</button>
-        {saved && <span>Saved</span>}
-        {!isEditing && <button onClick={() => window.print()}>Print</button>}
-        {isEditing && (
-          showForkInput ? (
-            <span className="cv-fork-create">
-              <input
-                value={forkInput}
-                onChange={(e) => setForkInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && createFork()}
-                placeholder="Company name"
-                autoFocus
-              />
-              <button onClick={createFork}>Create</button>
-              <button onClick={() => { setShowForkInput(false); setForkInput(""); }}>Cancel</button>
-            </span>
-          ) : (
-            <button onClick={() => setShowForkInput(true)}>Fork</button>
-          )
+        {readOnly ? (
+          <button onClick={() => window.print()}>Print</button>
+        ) : (
+          <>
+            {isEditing && <h1>Resume Generator</h1>}
+            <span className="cv-fork-badge">{activeFork ?? "Base"}</span>
+            <button onClick={() => setForkSelected(false)}>Switch</button>
+            <button onClick={() => setIsEditing((prev) => !prev)}>
+              {isEditing ? "Preview" : "Edit"}
+            </button>
+            <button onClick={handleSave}>Save</button>
+            {saved && <span>Saved</span>}
+            {!isEditing && <button onClick={() => window.print()}>Print</button>}
+            {isEditing && (
+              showForkInput ? (
+                <span className="cv-fork-create">
+                  <input
+                    value={forkInput}
+                    onChange={(e) => setForkInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && createFork()}
+                    placeholder="Company name"
+                    autoFocus
+                  />
+                  <button onClick={createFork}>Create</button>
+                  <button onClick={() => { setShowForkInput(false); setForkInput(""); }}>Cancel</button>
+                </span>
+              ) : (
+                <button onClick={() => setShowForkInput(true)}>Fork</button>
+              )
+            )}
+          </>
         )}
       </div>
 
@@ -517,7 +562,7 @@ export function ResumeTemplater() {
                       </div>
                       {entry.description && (
                         <div className="cv-entry-body">
-                          <Markdown>{entry.description}</Markdown>
+                          <Markdown remarkPlugins={[remarkBreaks]}>{entry.description}</Markdown>
                         </div>
                       )}
                     </div>
@@ -561,7 +606,7 @@ export function ResumeTemplater() {
                       </div>
                       {entry.description && (
                         <div className="cv-entry-body">
-                          <Markdown>{entry.description}</Markdown>
+                          <Markdown remarkPlugins={[remarkBreaks]}>{entry.description}</Markdown>
                         </div>
                       )}
                     </div>
