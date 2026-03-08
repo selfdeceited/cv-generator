@@ -1,11 +1,12 @@
 ## What it is
-Dead-simple almost fully vibecoded cover letter template engine.
+Dead-simple almost fully vibecoded CV template engine.
 There's probably the billion alternatives out there, but this one is free and suits my needs.
 
 Supports:
 - Markdown editing via [MDEditor](https://github.com/uiwjs/react-md-editor)
 - Spell checking via `spellCheck` prop on `<MDEditor>`
 - Persistence via local storage
+- Forking via local storage
 - Links to your other resources
 - Print mode for PDF export
 
