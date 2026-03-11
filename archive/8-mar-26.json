@@ -16,7 +16,7 @@
       "location": "Tbilisi, Georgia",
       "dateRange": "Jan 2025 - Oct 2025",
       "employmentType": "Full-time",
-      "description": " - Led sub-teams of up to 18 members overall, responsible for Point of Sale systems\\nacross 23 countries to ensure reliable in-person payment processing and\\nfiscalization compliance.\\n - Oversaw architecture of the multi-platform solution pluginizing 3rd-party\\npayment and fiscalization systems.\\n - Oversaw the foundation for quick product data-driven discovery experiments\\n - Responsible for critical-path services (6 backends, over 7 microfrontends),\\nincluding its technical projects, such as migration from legacy monolith\\n - Focused on team growth, technical debt reduction, and establishing sustainable\\ndelivery processes with clear ownership and incident management"
+      "description": " - Led sub-teams of up to 18 members overall, responsible for Point of Sale systems across 23 countries to ensure reliable in-person payment processing and fiscalization compliance.\\n - Oversaw architecture of the multi-platform solution pluginizing 3rd-party payment and fiscalization systems.\\n - Oversaw the foundation for quick product data-driven discovery experiments\\n - Responsible for critical-path services (6 backends, over 7 microfrontends), including its technical projects, such as migration from legacy monolith\\n - Focused on team growth, technical debt reduction, and establishing sustainable delivery processes with clear ownership and incident management"
     },
     {
       "role": "Tech Lead. Kiosk",
@@ -24,7 +24,7 @@
       "location": "Tbilisi, Georgia",
       "dateRange": "Oct 2022 - Dec 2024",
       "employmentType": "Full-time",
-      "description": " - Founded and led development of a self-service kiosk platform deployed across 18\\ncountries on 2000+ units, integrated with 25 payment providers (8 proprietary)\\n - Delivered a unified web-based experience across desktop and mobile, supporting\\n2M monthly orders and increasing average check by 12%\\nGrew team size by 100%\\n - Aligned technical architecture with product metrics\\n - Ensured seamless hardware-software integration for payment, receipt, and\\nsecure mode functionality"
+      "description": " - Founded and led development of a self-service kiosk platform deployed across 18 countries on 2000+ units, integrated with 25 payment providers (8 proprietary)\\n - Delivered a unified web-based experience across desktop and mobile, supporting\\n2M monthly orders and increasing average check by 12%\\nGrew team size by 100%\\n - Aligned technical architecture with product metrics\\n - Ensured seamless hardware-software integration for payment, receipt, and\\nsecure mode functionality"
     },
     {
       "role": "Tech Lead. Restaurant Cashier",
@@ -32,7 +32,7 @@
       "location": "Moscow, Russia",
       "dateRange": "Aug 2021 - Oct 2022",
       "employmentType": "Full-time",
-      "description": " - Sustained and evolved a distributed POS system across 15 countries, managing\\nbackend, frontend, and desktop services\\n - Drove technical strategy, prioritized backlog, identified technical debt, and led\\nmigration from monolith to domain services\\n - Participated in full feature lifecycle, from refinement to operational support, with\\nemphasis on non-functional requirements and system reliability"
+      "description": " - Sustained and evolved a distributed POS system across 15 countries, managing backend, frontend, and desktop services\\n - Drove technical strategy, prioritized backlog, identified technical debt, and led migration from monolith to domain services\\n - Participated in full feature lifecycle, from refinement to operational support, with emphasis on non-functional requirements and system reliability"
     },
     {
       "role": "Senior Software Engineer",
@@ -40,7 +40,7 @@
       "location": "Moscow, Russia",
       "dateRange": "Jul 2020 - Aug 2021",
       "employmentType": "Full-time",
-      "description": " - Contributed to a full-stack autonomous team within a larger LESS structure,\\nimplementing features for cashier interfaces, monolith decoupling, new countries\\nsupport\\n - Participated in monitoring, incident response, postmortems, and reliability\\nenhancements\\n - Facilitated team meetings and contributed to local engineering communities"
+      "description": " - Contributed to a full-stack autonomous team within a larger LESS structure, implementing features for cashier interfaces, monolith decoupling, new countries support\\n - Participated in monitoring, incident response, postmortems, and reliability enhancements\\n - Facilitated team meetings and contributed to local engineering communities"
     },
     {
       "role": "Acting Team Lead",
@@ -48,7 +48,7 @@
       "location": "Moscow, Russia",
       "dateRange": "Aug 2019 - Jul 2020",
       "employmentType": "Full-time",
-      "description": " - Led a cross-regional web team focused on infrastructure and customer-facing\\nfeatures for the iTero platform\\n - Contributed to refactoring legacy components, enhancing logging/monitoring,\\nand building cloud-native services like desktop notifications for lab assistants\\n - Participated in hiring, technical architecture discussions, and internal initiatives"
+      "description": " - Led a cross-regional web team focused on infrastructure and customer-facing features for the iTero platform\\n - Contributed to refactoring legacy components, enhancing logging/monitoring, and building cloud-native services like desktop notifications for lab assistants\\n - Participated in hiring, technical architecture discussions, and internal initiatives"
     },
     {
       "role": "Senior Software Engineer",
@@ -85,15 +85,15 @@
   "achievementEntries": [
     {
       "title": "Software development school",
-      "description": "Created and supervised the internal engineering\\nlearning processes for the company of 200+ engineers,\\nincluding the strategy, design, finding and raising\\ninternal speakers, shaping the format and sustainability\\nto move on with it without me.\\n - 4 successful sessions\\n - up to 18 hand-crafted practice-oriented workshops\\n - 40 people participated"
+      "description": "Created and supervised the internal engineering learning processes for the company of 200+ engineers, including the strategy, design, finding and raising internal speakers, shaping the format and sustainability to move on with it without me.\\n - 4 successful sessions\\n - up to 18 hand-crafted practice-oriented workshops\\n - 40 people participated"
     },
     {
       "title": "Frontend observability platform",
-      "description": "Initiated company internal service to achieve mobile and\\nfront-end observability (logs, metrics, traces stored in\\nAzure Data Exporer). It allowed us to reduce response\\ntime on incidents + collect decent amount of data on\\nhow our products are doing real-time.\\n - Up to 1500 RPS, usually around 600 RPS\\n - 50 apps involved\\n - 5B+ data units collected per week"
+      "description": "Initiated company internal service to achieve mobile and front-end observability (logs, metrics, traces stored in Azure Data Exporer). It allowed us to reduce response time on incidents + collect decent amount of data on how our products are doing real-time.\\n - Up to 1500 RPS, usually around 600 RPS\\n - 50 apps involved\\n - 5B+ data units collected per week"
     },
     {
       "title": "Internal flow testing tool for 3D scans",
-      "description": "Designed internal testing tool allowing to emulate tooth\\n 3D models flow processing for dental treatment.\\n - over 8 emulated steps\\n - custom models and flow changes\\n - up to 30 MAU"
+      "description": "Designed internal testing tool allowing to emulate tooth 3D models flow processing for dental treatment.\\n - over 8 emulated steps\\n - custom models and flow changes\\n - up to 30 MAU"
     }
   ],
   "hardSkills": "C#, MySQL, Kafka, Azure, AWS, Kubernetes, Helm, Terraform, Typescript, React, Redux, Electron, NodeJS, Microfrontends, Bash, Git, SQL Server, PostgreSQL, Azure Data Explorer, OpenTelemetry",
