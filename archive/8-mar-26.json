@@ -10,6 +10,14 @@
     "aboutIt": ""
   },
   "workEntries": [
+      {
+      "role": "Tech Lead, Agent Tools",
+      "company": "Snoonu",
+      "location": "Tbilisi, Georgia",
+      "dateRange": "June 2026 - now",
+      "employmentType": "Full-time",
+      "description": " - Leading 3 teams to enhance customer agent experience and decrease time to release for the complains by leveraging automation and AI-assisted technologies. \\n - Created and implemented product vision for three teams, passing several architecture review to set up foundation for widget-based customer agent assistants and data layer for automation."
+    },
     {
       "role": "Tech Lead. Point of Sale",
       "company": "Dodo Brands",
