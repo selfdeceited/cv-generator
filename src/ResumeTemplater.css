@@ -265,6 +265,40 @@ a.cv-link-item:hover {
     margin-top: 0.35rem;
 }
 
+.cv-company {
+    margin-bottom: 0.75rem;
+}
+
+.cv-company:last-child {
+    margin-bottom: 0;
+}
+
+.cv-company-name {
+    color: #038dff;
+}
+
+.cv-company-description {
+    margin-bottom: 0.35rem;
+    font-size: 0.875rem;
+    color: #444;
+}
+
+.cv-company-stack {
+    gap: 0.3rem;
+    margin-bottom: 0.35rem;
+}
+
+.cv-company-stack .cv-skill-tag {
+    padding: 0.1rem 0.45rem;
+    font-size: 0.75rem;
+}
+
+.cv-company > .cv-entry {
+    margin-top: 0.4rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid #e0e0e0;
+}
+
 .cv-entry-body > * {
     margin: 0;
 }
@@ -360,6 +394,20 @@ a.cv-link-item:hover {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+}
+
+.cv-company-edit {
+    background: #fafafa;
+}
+
+.cv-company-edit .cv-entry-edit {
+    background: #fff;
+}
+
+.cv-company-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
 }
 
 .cv-entry-edit-row {
@@ -471,5 +519,29 @@ a.cv-link-item:hover {
 
     .cv {
         padding: 0;
+    }
+
+    .cv-skills,
+    .cv-company-stack {
+        gap: 0.15rem;
+    }
+
+    .cv-skill-tag,
+    .cv-company-stack .cv-skill-tag {
+        padding: 0 0.3rem;
+        font-size: 0.65rem;
+        line-height: 1.4;
+        border-radius: 3px;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .cv-skills-group {
+        gap: 0.15rem;
+        padding-bottom: 0.4rem;
+    }
+
+    .cv-skills-group-label {
+        font-size: 0.7rem;
     }
 }

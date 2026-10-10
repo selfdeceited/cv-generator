@@ -31,11 +31,18 @@ interface ResumeFields {
 
 interface WorkEntry {
   role: string;
-  company: string;
   location: string;
   dateRange: string;
   employmentType: string;
   description: string;
+}
+
+interface CompanyEntry {
+  name: string;
+  description: string;
+  duration: string;
+  techStack: string;
+  roles: WorkEntry[];
 }
 
 interface EducationEntry {
@@ -62,12 +69,46 @@ const initialFields: ResumeFields = {
 
 const blankWork = (): WorkEntry => ({
   role: "",
-  company: "",
   location: "",
   dateRange: "",
   employmentType: "",
   description: "",
 });
+
+const blankCompany = (): CompanyEntry => ({
+  name: "",
+  description: "",
+  duration: "",
+  techStack: "",
+  roles: [blankWork()],
+});
+
+// Older data stored a flat workEntries list with a company name on each role.
+function groupWorkEntries(entries: (WorkEntry & { company?: string })[]): CompanyEntry[] {
+  const groups: CompanyEntry[] = [];
+  const byName = new Map<string, CompanyEntry>();
+  for (const { company = "", ...role } of entries) {
+    let group = byName.get(company);
+    if (!group) {
+      group = { name: company, description: "", duration: "", techStack: "", roles: [] };
+      byName.set(company, group);
+      groups.push(group);
+    }
+    group.roles.push(role);
+  }
+  return groups;
+}
+
+function readCompanies(parsed: Record<string, unknown>): CompanyEntry[] {
+  if (Array.isArray(parsed.companies)) {
+    return (parsed.companies as Partial<CompanyEntry>[]).map((c) => ({
+      ...blankCompany(),
+      ...c,
+      roles: Array.isArray(c.roles) ? c.roles : [],
+    }));
+  }
+  return Array.isArray(parsed.workEntries) ? groupWorkEntries(parsed.workEntries as WorkEntry[]) : [];
+}
 
 const blankEducation = (): EducationEntry => ({
   institution: "",
@@ -185,7 +226,7 @@ function PreviewText({ value }: { value: string }) {
 
 function loadFromStorage(storageKey = STORAGE_KEY): {
   fields: ResumeFields;
-  workEntries: WorkEntry[];
+  companies: CompanyEntry[];
   educationEntries: EducationEntry[];
   achievementEntries: AchievementEntry[];
   hardSkills: string;
@@ -199,7 +240,7 @@ function loadFromStorage(storageKey = STORAGE_KEY): {
       const parsed = JSON.parse(stored);
       return {
         fields: { ...initialFields, ...parsed.fields },
-        workEntries: parsed.workEntries ?? [],
+        companies: readCompanies(parsed),
         educationEntries: parsed.educationEntries ?? [],
         achievementEntries: parsed.achievementEntries ?? [],
         hardSkills: parsed.hardSkills ?? parsed.skills ?? "",
@@ -211,7 +252,7 @@ function loadFromStorage(storageKey = STORAGE_KEY): {
   } catch {
     // ignore parse errors
   }
-  return { fields: initialFields, workEntries: [], educationEntries: [], achievementEntries: [], hardSkills: "", softSkills: "", otherSkills: "", photo: "" };
+  return { fields: initialFields, companies: [], educationEntries: [], achievementEntries: [], hardSkills: "", softSkills: "", otherSkills: "", photo: "" };
 }
 
 function parseResumeData(raw: unknown) {
@@ -226,7 +267,7 @@ function parseResumeData(raw: unknown) {
 
   return {
     fields: { ...initialFields, ...fields },
-    workEntries: Array.isArray(parsed.workEntries) ? parsed.workEntries as WorkEntry[] : [],
+    companies: readCompanies(parsed),
     educationEntries: Array.isArray(parsed.educationEntries) ? parsed.educationEntries as EducationEntry[] : [],
     achievementEntries: Array.isArray(parsed.achievementEntries) ? parsed.achievementEntries as AchievementEntry[] : [],
     hardSkills: typeof parsed.hardSkills === "string" ? parsed.hardSkills : typeof parsed.skills === "string" ? parsed.skills : "",
@@ -239,7 +280,7 @@ function parseResumeData(raw: unknown) {
 export function ResumeTemplater() {
   const initial = loadFromStorage();
   const [fields, setFields] = useState<ResumeFields>(initial.fields);
-  const [workEntries, setWorkEntries] = useState<WorkEntry[]>(initial.workEntries);
+  const [companies, setCompanies] = useState<CompanyEntry[]>(initial.companies);
   const [educationEntries, setEducationEntries] = useState<EducationEntry[]>(initial.educationEntries);
   const [achievementEntries, setAchievementEntries] = useState<AchievementEntry[]>(initial.achievementEntries);
   const [hardSkills, setHardSkills] = useState<string>(initial.hardSkills);
@@ -265,7 +306,7 @@ export function ResumeTemplater() {
   const applyResumeData = (raw: unknown) => {
     const data = parseResumeData(raw);
     setFields(data.fields);
-    setWorkEntries(data.workEntries);
+    setCompanies(data.companies);
     setEducationEntries(data.educationEntries);
     setAchievementEntries(data.achievementEntries);
     setHardSkills(data.hardSkills);
@@ -314,7 +355,7 @@ export function ResumeTemplater() {
       .then((raw) => {
         const data = parseResumeData(raw);
         setFields(data.fields);
-        setWorkEntries(data.workEntries);
+        setCompanies(data.companies);
         setEducationEntries(data.educationEntries);
         setAchievementEntries(data.achievementEntries);
         setHardSkills(data.hardSkills);
@@ -342,9 +383,20 @@ export function ResumeTemplater() {
       setSaved(false);
     };
 
-  const handleWorkChange = (index: number, key: keyof WorkEntry, value: string) => {
-    setWorkEntries((prev) => prev.map((e, i) => i === index ? { ...e, [key]: value } : e));
+  const updateCompany = (index: number, update: (c: CompanyEntry) => CompanyEntry) => {
+    setCompanies((prev) => prev.map((c, i) => i === index ? update(c) : c));
     setSaved(false);
+  };
+
+  const handleCompanyChange = (index: number, key: Exclude<keyof CompanyEntry, "roles">, value: string) => {
+    updateCompany(index, (c) => ({ ...c, [key]: value }));
+  };
+
+  const handleWorkChange = (companyIndex: number, roleIndex: number, key: keyof WorkEntry, value: string) => {
+    updateCompany(companyIndex, (c) => ({
+      ...c,
+      roles: c.roles.map((r, i) => i === roleIndex ? { ...r, [key]: value } : r),
+    }));
   };
 
   const handleEducationChange = (index: number, key: keyof EducationEntry, value: string) => {
@@ -358,7 +410,7 @@ export function ResumeTemplater() {
   };
 
 
-  const currentData = () => ({ fields, workEntries, educationEntries, achievementEntries, hardSkills, softSkills, otherSkills, photo });
+  const currentData = () => ({ fields, companies, educationEntries, achievementEntries, hardSkills, softSkills, otherSkills, photo });
 
   const handleSave = () => {
     const key = activeFork ? getForkKey(activeFork) : STORAGE_KEY;
@@ -383,7 +435,7 @@ export function ResumeTemplater() {
     const key = fork ? getForkKey(fork) : STORAGE_KEY;
     const data = loadFromStorage(key);
     setFields(data.fields);
-    setWorkEntries(data.workEntries);
+    setCompanies(data.companies);
     setEducationEntries(data.educationEntries);
     setAchievementEntries(data.achievementEntries);
     setHardSkills(data.hardSkills);
@@ -542,39 +594,61 @@ export function ResumeTemplater() {
           <div className="cv-list-section">
             <div className="cv-list-header">
               <span className="cv-list-label">Work Experience</span>
-              <button type="button" onClick={() => { setWorkEntries((prev) => [...prev, blankWork()]); setSaved(false); }}>+ Add</button>
+              <button type="button" onClick={() => { setCompanies((prev) => [...prev, blankCompany()]); setSaved(false); }}>+ Add company</button>
             </div>
-            {workEntries.map((entry, i) => (
-              <div key={i} className="cv-entry-edit">
+            {companies.map((company, ci) => (
+              <div key={ci} className="cv-entry-edit cv-company-edit">
                 <div className="cv-entry-edit-row">
-                  <div className="field">
-                    <label>Role</label>
-                    <input type="text" value={entry.role} onChange={(e) => handleWorkChange(i, "role", e.target.value)} placeholder="Tech Lead" />
-                  </div>
                   <div className="field">
                     <label>Company</label>
-                    <input type="text" value={entry.company} onChange={(e) => handleWorkChange(i, "company", e.target.value)} placeholder="Acme Corp" />
+                    <input type="text" value={company.name} onChange={(e) => handleCompanyChange(ci, "name", e.target.value)} placeholder="Acme Corp" />
                   </div>
                   <div className="field">
-                    <label>Location</label>
-                    <input type="text" value={entry.location} onChange={(e) => handleWorkChange(i, "location", e.target.value)} placeholder="Tbilisi, Georgia" />
+                    <label>Overall Time</label>
+                    <input type="text" value={company.duration} onChange={(e) => handleCompanyChange(ci, "duration", e.target.value)} placeholder="Jul 2020 – Oct 2025 · 5 yrs 3 mos" />
                   </div>
                 </div>
-                <div className="cv-entry-edit-row">
-                  <div className="field">
-                    <label>Date Range</label>
-                    <input type="text" value={entry.dateRange} onChange={(e) => handleWorkChange(i, "dateRange", e.target.value)} placeholder="Jan 2022 – Dec 2024" />
-                  </div>
-                  <div className="field">
-                    <label>Employment Type</label>
-                    <input type="text" value={entry.employmentType} onChange={(e) => handleWorkChange(i, "employmentType", e.target.value)} placeholder="Full-time" />
-                  </div>
+                <div className="field">
+                  <label>Company Description</label>
+                  <textarea rows={3} value={company.description} onChange={(e) => handleCompanyChange(ci, "description", e.target.value)} placeholder="What the company does" />
                 </div>
-                <div className="field field--big">
-                  <label>Description</label>
-                  <MDEditor value={entry.description} onChange={(v) => handleWorkChange(i, "description", v ?? "")} preview="edit" hideToolbar={false} textareaProps={{ spellCheck: true }} />
+                <div className="field">
+                  <label>Tech Stack (comma-separated)</label>
+                  <textarea rows={2} value={company.techStack} onChange={(e) => handleCompanyChange(ci, "techStack", e.target.value)} placeholder="C#, .NET, React, PostgreSQL, Kafka" />
                 </div>
-                <button type="button" className="cv-remove-btn" onClick={() => { setWorkEntries((prev) => prev.filter((_, idx) => idx !== i)); setSaved(false); }}>Remove</button>
+                {company.roles.map((entry, i) => (
+                  <div key={i} className="cv-entry-edit">
+                    <div className="cv-entry-edit-row">
+                      <div className="field">
+                        <label>Role</label>
+                        <input type="text" value={entry.role} onChange={(e) => handleWorkChange(ci, i, "role", e.target.value)} placeholder="Tech Lead" />
+                      </div>
+                      <div className="field">
+                        <label>Location</label>
+                        <input type="text" value={entry.location} onChange={(e) => handleWorkChange(ci, i, "location", e.target.value)} placeholder="Tbilisi, Georgia" />
+                      </div>
+                    </div>
+                    <div className="cv-entry-edit-row">
+                      <div className="field">
+                        <label>Date Range</label>
+                        <input type="text" value={entry.dateRange} onChange={(e) => handleWorkChange(ci, i, "dateRange", e.target.value)} placeholder="Jan 2022 – Dec 2024" />
+                      </div>
+                      <div className="field">
+                        <label>Employment Type</label>
+                        <input type="text" value={entry.employmentType} onChange={(e) => handleWorkChange(ci, i, "employmentType", e.target.value)} placeholder="Full-time" />
+                      </div>
+                    </div>
+                    <div className="field field--big">
+                      <label>Description</label>
+                      <MDEditor value={entry.description} onChange={(v) => handleWorkChange(ci, i, "description", v ?? "")} preview="edit" hideToolbar={false} textareaProps={{ spellCheck: true }} />
+                    </div>
+                    <button type="button" className="cv-remove-btn" onClick={() => updateCompany(ci, (c) => ({ ...c, roles: c.roles.filter((_, idx) => idx !== i) }))}>Remove role</button>
+                  </div>
+                ))}
+                <div className="cv-company-actions">
+                  <button type="button" onClick={() => updateCompany(ci, (c) => ({ ...c, roles: [...c.roles, blankWork()] }))}>+ Add role</button>
+                  <button type="button" className="cv-remove-btn" onClick={() => { setCompanies((prev) => prev.filter((_, idx) => idx !== ci)); setSaved(false); }}>Remove company</button>
+                </div>
               </div>
             ))}
           </div>
@@ -662,28 +736,43 @@ export function ResumeTemplater() {
 
           <div className="cv-columns">
             <div className="cv-col-left">
-              {workEntries.length > 0 && (
+              {companies.length > 0 && (
                 <div className="cv-section">
                   <h3 className="cv-section-title">Work Experience</h3>
-                  {workEntries.map((entry, i) => (
-                    <div key={i} className="cv-entry">
+                  {companies.map((company, ci) => (
+                    <div key={ci} className="cv-company">
                       <div className="cv-entry-header cv-entry-header--stacked">
-                        <div>
-                          <strong>{entry.role || <em style={{ opacity: 0.4 }}>Role</em>}</strong>
-                          {entry.company && <span> · <span className="cv-entry-role">{entry.company}</span></span>}
-                        </div>
-                        <div className="cv-entry-meta">
-                          {entry.location && <><IconLocation />{entry.location}</>}
-                          {entry.location && entry.dateRange && <span> · </span>}
-                          {entry.dateRange && <><IconCalendar />{entry.dateRange}</>}
-                          {entry.employmentType && <span> · {entry.employmentType}</span>}
-                        </div>
+                        <strong className="cv-company-name">{company.name || <em style={{ opacity: 0.4 }}>Company</em>}</strong>
+                        {company.duration && <div className="cv-entry-meta"><IconCalendar />{company.duration}</div>}
                       </div>
-                      {entry.description && (
-                        <div className="cv-entry-body">
-                          <Markdown remarkPlugins={[remarkBreaks]}>{entry.description}</Markdown>
+                      {company.description && (
+                        <div className="cv-entry-body cv-company-description">
+                          <PreviewText value={company.description} />
                         </div>
                       )}
+                      {toTags(company.techStack).length > 0 && (
+                        <div className="cv-skills cv-company-stack">
+                          {toTags(company.techStack).map((tech, i) => <span key={i} className="cv-skill-tag">{tech}</span>)}
+                        </div>
+                      )}
+                      {company.roles.map((entry, i) => (
+                        <div key={i} className="cv-entry">
+                          <div className="cv-entry-header cv-entry-header--stacked">
+                            <strong>{entry.role || <em style={{ opacity: 0.4 }}>Role</em>}</strong>
+                            <div className="cv-entry-meta">
+                              {entry.location && <><IconLocation />{entry.location}</>}
+                              {entry.location && entry.dateRange && <span> · </span>}
+                              {entry.dateRange && <><IconCalendar />{entry.dateRange}</>}
+                              {entry.employmentType && <span> · {entry.employmentType}</span>}
+                            </div>
+                          </div>
+                          {entry.description && (
+                            <div className="cv-entry-body">
+                              <Markdown remarkPlugins={[remarkBreaks]}>{entry.description}</Markdown>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
