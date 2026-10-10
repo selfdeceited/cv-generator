@@ -7,9 +7,36 @@
 
 .cv-header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 1rem;
     margin-bottom: 2rem;
+}
+
+.cv-json-import {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.cv-json-file {
+    display: none;
+}
+
+.cv-json-url {
+    width: min(220px, 100%);
+    box-sizing: border-box;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font: inherit;
+}
+
+.cv-import-error {
+    flex-basis: 100%;
+    color: #b42318;
+    font-size: 0.875rem;
 }
 
 .cv-header h1 {
@@ -137,6 +164,13 @@
     font-family: inherit !important;
 }
 
+.field--big .w-md-editor textarea {
+    padding: inherit !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    resize: none !important;
+}
+
 .field input:focus,
 .field textarea:focus {
     outline: none;
@@ -207,6 +241,11 @@ a.cv-link-item:hover {
     justify-content: space-between;
     align-items: baseline;
     flex-wrap: wrap;
+}
+
+.cv-entry-header--stacked {
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .cv-entry-meta {
@@ -378,6 +417,11 @@ a.cv-link-item:hover {
 
 .cv-preview strong {
     color: #262626;
+}
+
+.cv-preview hr {
+    border: 0;
+    border-top: 1px solid #e0e0e0;
 }
 
 .cv-columns {

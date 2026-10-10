@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import Markdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import MDEditor from "@uiw/react-md-editor";
@@ -79,6 +79,15 @@ const blankAchievement = (): AchievementEntry => ({
   title: "",
   description: "",
 });
+
+function unescapeStrings<T>(value: T): T {
+  if (typeof value === "string") return value.replace(/\\n/g, "\n") as T;
+  if (Array.isArray(value)) return value.map(unescapeStrings) as T;
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, unescapeStrings(item)])) as T;
+  }
+  return value;
+}
 
 function IconEmail() {
   return (
@@ -205,6 +214,28 @@ function loadFromStorage(storageKey = STORAGE_KEY): {
   return { fields: initialFields, workEntries: [], educationEntries: [], achievementEntries: [], hardSkills: "", softSkills: "", otherSkills: "", photo: "" };
 }
 
+function parseResumeData(raw: unknown) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    throw new Error("The JSON must contain a resume object.");
+  }
+
+  const parsed = unescapeStrings(raw) as Record<string, unknown>;
+  const fields = parsed.fields && typeof parsed.fields === "object" && !Array.isArray(parsed.fields)
+    ? parsed.fields as Partial<ResumeFields>
+    : {};
+
+  return {
+    fields: { ...initialFields, ...fields },
+    workEntries: Array.isArray(parsed.workEntries) ? parsed.workEntries as WorkEntry[] : [],
+    educationEntries: Array.isArray(parsed.educationEntries) ? parsed.educationEntries as EducationEntry[] : [],
+    achievementEntries: Array.isArray(parsed.achievementEntries) ? parsed.achievementEntries as AchievementEntry[] : [],
+    hardSkills: typeof parsed.hardSkills === "string" ? parsed.hardSkills : typeof parsed.skills === "string" ? parsed.skills : "",
+    softSkills: typeof parsed.softSkills === "string" ? parsed.softSkills : "",
+    otherSkills: typeof parsed.otherSkills === "string" ? parsed.otherSkills : "",
+    photo: typeof parsed.photo === "string" ? parsed.photo : "",
+  };
+}
+
 export function ResumeTemplater() {
   const initial = loadFromStorage();
   const [fields, setFields] = useState<ResumeFields>(initial.fields);
@@ -226,35 +257,75 @@ export function ResumeTemplater() {
 
   const [readOnly, setReadOnly] = useState(false);
   const [loading, setLoading] = useState(() => Boolean(new URLSearchParams(window.location.search).get("data")));
+  const [jsonUrl, setJsonUrl] = useState("");
+  const [importError, setImportError] = useState("");
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const applyResumeData = (raw: unknown) => {
+    const data = parseResumeData(raw);
+    setFields(data.fields);
+    setWorkEntries(data.workEntries);
+    setEducationEntries(data.educationEntries);
+    setAchievementEntries(data.achievementEntries);
+    setHardSkills(data.hardSkills);
+    setSoftSkills(data.softSkills);
+    setOtherSkills(data.otherSkills);
+    setPhoto(data.photo);
+    setReadOnly(false);
+    setIsEditing(true);
+    setForkSelected(true);
+    setSaved(false);
+  };
+
+  const handleLocalImport = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      applyResumeData(JSON.parse(await file.text()));
+      setImportError("");
+    } catch (error) {
+      setImportError(error instanceof Error ? error.message : "Could not read this JSON file.");
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  const handleRemoteImport = async () => {
+    if (!jsonUrl.trim()) return;
+    setImporting(true);
+    setImportError("");
+    try {
+      const response = await fetch(jsonUrl.trim());
+      if (!response.ok) throw new Error(`Request failed (${response.status}).`);
+      applyResumeData(await response.json());
+    } catch (error) {
+      setImportError(error instanceof Error ? error.message : "Could not load JSON from this URL.");
+    } finally {
+      setImporting(false);
+    }
+  };
 
   useEffect(() => {
     const url = new URLSearchParams(window.location.search).get("data");
     if (!url) return;
-    const unescape = (s: string) => s.replace(/\\n/g, "\n");
-    const unescapeStrings = <T,>(obj: T): T => {
-      if (typeof obj === "string") return unescape(obj) as T;
-      if (Array.isArray(obj)) return obj.map(unescapeStrings) as T;
-      if (obj && typeof obj === "object") {
-        return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, unescapeStrings(v)])) as T;
-      }
-      return obj;
-    };
     fetch(url)
       .then((r) => r.json())
       .then((raw) => {
-        const parsed = unescapeStrings(raw);
-        setFields({ ...initialFields, ...parsed.fields });
-        setWorkEntries(parsed.workEntries ?? []);
-        setEducationEntries(parsed.educationEntries ?? []);
-        setAchievementEntries(parsed.achievementEntries ?? []);
-        setHardSkills(parsed.hardSkills ?? "");
-        setSoftSkills(parsed.softSkills ?? "");
-        setOtherSkills(parsed.otherSkills ?? "");
-        setPhoto(parsed.photo ?? "");
+        const data = parseResumeData(raw);
+        setFields(data.fields);
+        setWorkEntries(data.workEntries);
+        setEducationEntries(data.educationEntries);
+        setAchievementEntries(data.achievementEntries);
+        setHardSkills(data.hardSkills);
+        setSoftSkills(data.softSkills);
+        setOtherSkills(data.otherSkills);
+        setPhoto(data.photo);
         setReadOnly(true);
         setIsEditing(false);
         setForkSelected(true);
       })
+      .catch((error) => setImportError(error instanceof Error ? error.message : "Could not load resume data."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -295,6 +366,19 @@ export function ResumeTemplater() {
     setSaved(true);
   };
 
+  const handleExport = () => {
+    const file = new Blob([JSON.stringify(currentData(), null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    const filename = (activeFork || fields.name || "resume")
+      .replace(/[^a-z0-9_-]+/gi, "-")
+      .replace(/^-|-$/g, "") || "resume";
+    link.href = url;
+    link.download = `${filename}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const switchFork = (fork: string | null) => {
     const key = fork ? getForkKey(fork) : STORAGE_KEY;
     const data = loadFromStorage(key);
@@ -323,7 +407,7 @@ export function ResumeTemplater() {
     setSaved(true);
   };
 
-  const toTags = (s: string) => s.split(",").map((t) => t.trim()).filter(Boolean);
+  const toTags = (s: string) => s.split(/[,\n]/).map((t) => t.trim()).filter(Boolean);
   const hardTags = toTags(hardSkills);
   const softTags = toTags(softSkills);
   const otherTags = toTags(otherSkills);
@@ -363,6 +447,33 @@ export function ResumeTemplater() {
             </button>
             <button onClick={handleSave}>Save</button>
             {saved && <span>Saved</span>}
+            {isEditing && (
+              <div className="cv-json-import">
+                <input
+                  ref={fileInputRef}
+                  className="cv-json-file"
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={handleLocalImport}
+                  aria-label="Import resume JSON file"
+                />
+                <button type="button" onClick={() => fileInputRef.current?.click()}>Import file</button>
+                <input
+                  className="cv-json-url"
+                  type="url"
+                  value={jsonUrl}
+                  onChange={(event) => setJsonUrl(event.target.value)}
+                  onKeyDown={(event) => event.key === "Enter" && handleRemoteImport()}
+                  placeholder="JSON URL"
+                  aria-label="Resume JSON URL"
+                />
+                <button type="button" onClick={handleRemoteImport} disabled={importing || !jsonUrl.trim()}>
+                  {importing ? "Loading…" : "Load URL"}
+                </button>
+                <button type="button" onClick={handleExport}>Export JSON</button>
+              </div>
+            )}
+            {importError && <span className="cv-import-error" role="alert">{importError}</span>}
             {!isEditing && <button onClick={() => window.print()}>Print</button>}
             {isEditing && (
               showForkInput ? (
@@ -495,6 +606,20 @@ export function ResumeTemplater() {
             ))}
           </div>
 
+          {/* Skills */}
+          <div className="field">
+            <label htmlFor="hardSkills">Hard Skills (comma-separated)</label>
+            <textarea id="hardSkills" rows={3} value={hardSkills} onChange={(e) => { setHardSkills(e.target.value); setSaved(false); }} placeholder="React, TypeScript, C#, Microservices" />
+          </div>
+          <div className="field">
+            <label htmlFor="softSkills">Soft Skills (comma-separated)</label>
+            <textarea id="softSkills" rows={3} value={softSkills} onChange={(e) => { setSoftSkills(e.target.value); setSaved(false); }} placeholder="Team Leadership, Mentoring, Communication" />
+          </div>
+          <div className="field">
+            <label htmlFor="otherSkills">Other (comma-separated)</label>
+            <textarea id="otherSkills" rows={3} value={otherSkills} onChange={(e) => { setOtherSkills(e.target.value); setSaved(false); }} placeholder="Agile, CI/CD, AWS" />
+          </div>
+
           {/* Achievements */}
           <div className="cv-list-section">
             <div className="cv-list-header">
@@ -515,20 +640,6 @@ export function ResumeTemplater() {
               </div>
             ))}
           </div>
-
-          {/* Skills */}
-          <div className="field">
-            <label htmlFor="hardSkills">Hard Skills (comma-separated)</label>
-            <input id="hardSkills" type="text" value={hardSkills} onChange={(e) => { setHardSkills(e.target.value); setSaved(false); }} placeholder="React, TypeScript, C#, Microservices" />
-          </div>
-          <div className="field">
-            <label htmlFor="softSkills">Soft Skills (comma-separated)</label>
-            <input id="softSkills" type="text" value={softSkills} onChange={(e) => { setSoftSkills(e.target.value); setSaved(false); }} placeholder="Team Leadership, Mentoring, Communication" />
-          </div>
-          <div className="field">
-            <label htmlFor="otherSkills">Other (comma-separated)</label>
-            <input id="otherSkills" type="text" value={otherSkills} onChange={(e) => { setOtherSkills(e.target.value); setSaved(false); }} placeholder="Agile, CI/CD, AWS" />
-          </div>
         </div>
       ) : (
         <div className="cv-preview">
@@ -542,6 +653,13 @@ export function ResumeTemplater() {
             photo={photo}
           />
 
+          {fields.whoAmI && (
+            <div className="cv-section">
+              <h3 className="cv-section-title">About</h3>
+              <PreviewText value={fields.whoAmI} />
+            </div>
+          )}
+
           <div className="cv-columns">
             <div className="cv-col-left">
               {workEntries.length > 0 && (
@@ -549,13 +667,14 @@ export function ResumeTemplater() {
                   <h3 className="cv-section-title">Work Experience</h3>
                   {workEntries.map((entry, i) => (
                     <div key={i} className="cv-entry">
-                      <div className="cv-entry-header">
+                      <div className="cv-entry-header cv-entry-header--stacked">
                         <div>
                           <strong>{entry.role || <em style={{ opacity: 0.4 }}>Role</em>}</strong>
                           {entry.company && <span> · <span className="cv-entry-role">{entry.company}</span></span>}
-                          {entry.location && <span className="cv-entry-meta"> · <IconLocation />{entry.location}</span>}
                         </div>
                         <div className="cv-entry-meta">
+                          {entry.location && <><IconLocation />{entry.location}</>}
+                          {entry.location && entry.dateRange && <span> · </span>}
                           {entry.dateRange && <><IconCalendar />{entry.dateRange}</>}
                           {entry.employmentType && <span> · {entry.employmentType}</span>}
                         </div>
@@ -589,31 +708,6 @@ export function ResumeTemplater() {
             </div>
 
             <div className="cv-col-right">
-              {fields.whoAmI && (
-                <div className="cv-section">
-                  <h3 className="cv-section-title">About</h3>
-                  <PreviewText value={fields.whoAmI} />
-                </div>
-              )}
-
-              {achievementEntries.length > 0 && (
-                <div className="cv-section">
-                  <h3 className="cv-section-title">Achievements</h3>
-                  {achievementEntries.map((entry, i) => (
-                    <div key={i} className="cv-entry">
-                      <div className="cv-entry-header">
-                        <strong>{entry.title || <em style={{ opacity: 0.4 }}>Title</em>}</strong>
-                      </div>
-                      {entry.description && (
-                        <div className="cv-entry-body">
-                          <Markdown remarkPlugins={[remarkBreaks]}>{entry.description}</Markdown>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
               {(hardTags.length > 0 || softTags.length > 0 || otherTags.length > 0) && (
                 <div className="cv-section">
                   <h3 className="cv-section-title">Skills</h3>
@@ -639,6 +733,24 @@ export function ResumeTemplater() {
                       <span className="cv-entry-meta">{otherTags.join(", ")}</span>
                     </div>
                   )}
+                </div>
+              )}
+
+              {achievementEntries.length > 0 && (
+                <div className="cv-section">
+                  <h3 className="cv-section-title">Achievements</h3>
+                  {achievementEntries.map((entry, i) => (
+                    <div key={i} className="cv-entry">
+                      <div className="cv-entry-header">
+                        <strong>{entry.title || <em style={{ opacity: 0.4 }}>Title</em>}</strong>
+                      </div>
+                      {entry.description && (
+                        <div className="cv-entry-body">
+                          <Markdown remarkPlugins={[remarkBreaks]}>{entry.description}</Markdown>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
