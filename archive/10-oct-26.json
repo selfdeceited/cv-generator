@@ -17,17 +17,17 @@
       "techStack": ".NET, RabbitMQ, MassTransit, React, Typescript, Python, LangChain, LangGraph, MongoDB, AWS Bedrock, Salesforce",
       "roles": [
         {
-          "role": "Tech Lead, Agent Tools",
+          "role": "Tech Lead. Agent Tools",
           "location": "Tbilisi, Georgia",
           "dateRange": "June 2026 - now",
           "employmentType": "Full-time",
-          "description": " - Leading 3 teams driven to enhance customer agent experience and decrease mean time to resolve for the complains by creating end-to-end widgets to embed to Salesforce Service cloud, leveraging automation to launch AI-assisted SOP-driven workflows, and setting up data and action layers, for both humans and AI.\n - Created and demostrated the product vision and roadmap for all teams. Pivoted the product direction to widgets instead of creating competing products. Led and finalized several architecture reviews to set up the services foundation, leveraging Langchain-based SOP handlining, widgets frontend monorepo and event-driven data snapshot service.\n- Successfully launched brand new service from scratch, as well as maintaining several legacy/low-maintained products by addressing tech debt and reliability issues. "
+          "description": " - Leading 3 teams driven to enhance customer agent experience and decrease mean time to resolve for the complains by creating end-to-end widgets to embed to Salesforce Service cloud, leveraging automation to launch AI-assisted SOP-driven workflows, and setting up data and action layers, for both humans and AI.\n - Created and demostrated the product vision and roadmap for all teams. Pivoted the product direction to widgets instead of creating competing products. Led and finalized several architecture reviews to set up the services foundation, leveraging Langchain-based SOP handling, widgets frontend monorepo and event-driven data snapshot service.\n- Successfully launched brand new service from scratch, as well as maintaining several legacy/low-maintained products by addressing tech debt and reliability issues."
         }
       ]
     },
     {
       "name": "Dodo Brands",
-      "description": "We create global food francizes to make our client happy by opening 1500+ pizza shops in 25+ countries and over 200 coffee spots in 3 companies.",
+      "description": "We create global food francizes to make our clients happy by opening 1500+ pizza shops in 25+ countries and over 200 coffee shops in 3 countries.",
       "duration": "Jul 2020 – Oct 2025 · 5 yrs 3 mos",
       "techStack": "C#, React, Typescript, Electron, MySQL, RabbitMQ, Kafka, Kubernetes, Azure, Yandex Cloud",
       "roles": [
@@ -36,28 +36,28 @@
           "location": "Tbilisi, Georgia",
           "dateRange": "Jan 2025 - Oct 2025",
           "employmentType": "Full-time",
-          "description": " - Led sub-teams of up to 18 members overall, responsible for Point of Sale systems across 23 countries to ensure reliable in-person payment processing and fiscalization compliance.\n - Oversaw architecture of the multi-platform solution pluginizing 3rd-party payment and fiscalization systems.\n - Oversaw the foundation for quick product data-driven discovery experiments\n - Responsible for critical-path services (6 backends, over 7 microfrontends), including its technical projects, such as migration from legacy monolith\n - Focused on team growth, technical debt reduction, and establishing sustainable delivery processes with clear ownership and incident management"
+          "description": "Led 3 sub-teams of up to 18 members overall, responsible for Point of Sale systems across 23 countries to ensure reliable in-person payment processing and fiscalization compliance.\n - Oversaw the design and implementation of the multi-platform solution pluginizing external payment and fiscalization connectors to avoid extra development needed to start purchasing in-place in new countries and leveraging Android kiosks to reduce device CapEx by up to 12% when opening new stores.\n - Set up the foundation for quick product data-driven discovery experiments to let business check new hypothesis, such as new checkout flow or new payment methods promotions.\n - Responsible for critical-path services (6 backends, over 7 microfrontends), including its technical projects, such as migration from legacy monolith, postmortem resolutions and keeping up with the SLOs.\n - Focused on team growth, toil and technical debt reduction while establishing sustainable delivery processes with clear ownership and incident management."
         },
         {
           "role": "Tech Lead. Kiosk",
           "location": "Tbilisi, Georgia",
           "dateRange": "Oct 2022 - Dec 2024",
           "employmentType": "Full-time",
-          "description": " - Founded and led development of a self-service kiosk platform deployed across 18 countries on 2000+ units, integrated with 25 payment providers (8 proprietary)\n - Delivered a unified web-based experience across desktop and mobile, supporting\n2M monthly orders and increasing average check by 12%\nGrew team size by 100%\n - Aligned technical architecture with product metrics\n - Ensured seamless hardware-software integration for payment, receipt, and\nsecure mode functionality"
+          "description": " - Founded and led development of a self-service kiosk platform deployed across 18 countries on 2000+ units, integrated with 25 payment providers (8 proprietary), with own settings, auth and installation process, dynamic menu and promo screens, etc.\n - Delivered a unified web-based experience across desktop and mobile, supporting 2M monthly orders and increasing average check by 12%.\n - Ensured seamless integration for hardware parts of the kiosk using iOS and Electron application (payments, receipts, secure mode) to provide secure and quick way to install and update the shell that sets it up together.\n - Grew team size by 100%.\n - Set up and justified the new monolithic architecture for Point of Sale backend ecosystem, improving time-to-release and development experience."
         },
         {
           "role": "Tech Lead. Restaurant Cashier",
           "location": "Moscow, Russia",
           "dateRange": "Aug 2021 - Oct 2022",
           "employmentType": "Full-time",
-          "description": " - Sustained and evolved a distributed POS system across 15 countries, managing backend, frontend, and desktop services\n - Drove technical strategy, prioritized backlog, identified technical debt, and led migration from monolith to domain services\n - Participated in full feature lifecycle, from refinement to operational support, with emphasis on non-functional requirements and system reliability"
+          "description": " - Sustained and evolved a distributed POS system across 15 countries, managing backend, frontend, and Electron-based desktop services, such as setting up electronic receipts to reduce paper costs or cashier goals prototype to increase in-person average bills.\n - Drove technical strategy, prioritized technical backlog, identified technical debt, and led migration from monolith to domain services.\n - Participated in full feature lifecycle, from refinement to operational support, with the emphasis on non-functional requirements and system reliability."
         },
         {
           "role": "Senior Software Engineer",
           "location": "Moscow, Russia",
           "dateRange": "Jul 2020 - Aug 2021",
           "employmentType": "Full-time",
-          "description": " - Contributed to a full-stack autonomous team within a larger LESS structure, implementing features for cashier interfaces, monolith decoupling, new countries support\n - Participated in monitoring, incident response, postmortems, and reliability enhancements\n - Facilitated team meetings and contributed to local engineering communities"
+          "description": " - Contributed to a full-stack autonomous team within a larger LESS structure, implementing features for cashier interfaces, monolith decoupling, and new countries support.\n - Participated in monitoring, incident response, postmortems, and reliability enhancements (e.g. caching strategies, database optimizations).\n - Facilitated team meetings and contributed to local engineering communities."
         }
       ]
     },
@@ -72,21 +72,21 @@
           "location": "Moscow, Russia",
           "dateRange": "Aug 2019 - Jul 2020",
           "employmentType": "Full-time",
-          "description": " - Led a cross-regional web team focused on infrastructure and customer-facing features for the iTero scanner platform\n - Contributed to refactoring legacy components, enhancing logging/monitoring, and building cloud-native services like desktop notifications for lab assistants\n - Participated in hiring, technical architecture discussions, and internal initiatives"
+          "description": " - Led a cross-regional web team focused on infrastructure and customer-facing features for the iTero scanner platform, e.g. guided way to ease the client 'happy path' from scanning to setting up treatment simumation within minutes, available from scanner and web.\n - Contributed to refactoring legacy components, enhancing client logging/monitoring, and building cloud-native services like desktop notifications for lab assistants.\n - Participated in hiring, technical architecture discussions, DevOps assistance and internal initiatives."
         },
         {
           "role": "Senior Software Engineer",
           "location": "Moscow, Russia",
           "dateRange": "Feb 2018 - Aug 2019",
           "employmentType": "Full-time",
-          "description": "- Migrated monolithic applications to microservices on AWS, enabling regional data synchronization with 3D scanners and lab software\n-  Developed APIs, maintained performance, and integrated with internal data hubs using Siren client\n- Supported hiring and onboarding of new engineers"
+          "description": "- Migrated monolithic applications to microservices on AWS, enabling regional data synchronization with 3D scanners and lab software.\n- Developed APIs to obtain 3D models from web, maintained performance by moving from stored procedures, and integrated with internal data hubs using Siren client.\n- Supported hiring and onboarding of new engineers."
         },
         {
           "role": "Software Developer",
           "location": "Moscow, Russia",
           "dateRange": "Mar 2015 - Feb 2018",
           "employmentType": "Full-time",
-          "description": " - Developed the MyAlignTech platform for 3D dental case tracking, billing, subscription, and scanner management\n - Worked on metadata synchronization, performance optimization under increasing load, and embedded functionality in iTero scanners\n - Collaborated in a distributed Moscow-Tel Aviv team using Scrum and XP methodologies."
+          "description": " - Developed the MyAlignTech platform for 3D dental case tracking, billing, subscriptions and scanner management as a part of the distributed Moscow-Tel Aviv team.\n - Worked on metadata synchronization, performance optimization under increasing load, and embedded functionality in iTero scanners (embedded client, WCF-based communication layer, emulator for testing)."
         }
       ]
     },
@@ -128,7 +128,7 @@
     }
   ],
   "hardSkills": "C#, Python, TypeScript, MySQL, PostgreSQL, MongoDB, Kafka, RabbitMQ, AWS, Azure, Kubernetes, Helm, Terraform, React, Redux, Electron, NodeJS, Microfrontends, Bash, Git, Azure Data Explorer, OpenTelemetry, GitHub Actions, LangChain,  LangGraph, ReAct model, Skills, AI-Assistant Development",
-  "softSkills": "Kanban Model, Delivery Review, Product Vision and Strategy, Engineering Management, Self-Organized Teams, System Design, Event Storming, Systems Thinking, Incident Management, Toil Assessment",
-  "otherSkills": "Backend, Frontend, Full-stack, Mobile, Retrospectives, People Management, Leadership Models, Performance Reviews, Career Coaching, Team Growth, Data-informed, Continuous Improvement, Delegation Poker, Team Slignment, Motivation Models, Feedback Culture, Management 3.0, Succession Planning, Maturity Models, Agile, Scrum, LeSS, Kanban, DevOps, Shift-left Mindset, XP, Continuous Delivery, Problem Solving, Empathy, Transparency, Spec-Driven Development, BDD, Domain-Driven Design, Hiring, Onboarding, Interview process, Knowledge sharing, Analytics, Metrics, Clean architecture, Capacity planning, OKR, Automation, On-duty, SRE, Reliability, SLO, Service-oriented architecture, Microservices, DORA",
+  "softSkills": "Kanban Model, Delivery Review, Product Vision and Strategy, Engineering Management, Self-Organized Teams, System Design, Event Storming, Incident Management, Toil Assessment",
+  "otherSkills": "Backend, Frontend, Full-stack, Mobile, Retrospectives, People Management, Leadership Models, Performance Reviews, Career Coaching, Team Growth, Data-Informed Culture, Continuous Improvement, Delegation Poker, Team Topologies, Motivation Models, Feedback Culture, Management 3.0, Succession Planning, Maturity Models, Agile, Scrum, LeSS, Kanban, DevOps, Shift-Left Mindset, XP, Continuous Delivery, Spec-Driven Development, BDD, Domain-Driven Design, Hiring, Onboarding, Interview Process, Knowledge sharing, Analytics, Metrics, Clean architecture, Capacity planning, OKRs, On-call, SRE, Reliability, SLOs, Service-oriented architecture, Microservices, DORA Metrics, Empathy, Transparency, Problem Solving, Systems Thinking",
   "photo": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvdXBsb2FkZWQvaW1nXzM5M3lOVm9TWGMyZnVYd2RqcXI0Q1JYZ0FjWCJ9"
 }
